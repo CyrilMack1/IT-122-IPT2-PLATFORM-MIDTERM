@@ -38,6 +38,14 @@
         </div>
     </div>
 
+    {{-- REJECTION REASON --}}
+    @if ($order->status === 'rejected' && $order->rejection_reason)
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <p class="text-xs uppercase tracking-wide text-red-700 font-medium mb-1">Order rejected</p>
+            <p class="text-sm text-red-800">Reason: {{ $order->rejection_reason }}</p>
+        </div>
+    @endif
+
     {{-- DELIVERY --}}
     <div class="bg-white rounded-lg border border-gray-200 p-6 mb-4">
         <p class="text-xs uppercase tracking-wide text-gray-400 mb-2">Delivery address</p>
@@ -80,7 +88,7 @@
         </div>
     </div>
 
-    {{-- RATING --}}
+    {{-- RATING FORM (kung delivered pa lang at wala pang rating) --}}
     @if ($order->status === 'delivered' && !$order->restaurant_rating)
         <div class="bg-white rounded-lg border border-gray-200 p-6">
             <p class="text-xs uppercase tracking-wide text-gray-400 mb-4">Rate your order</p>
@@ -89,13 +97,11 @@
 
                 <div>
                     <label class="block text-sm text-gray-700 mb-2">Restaurant</label>
-                    <div class="flex gap-2">
+                    <div class="flex gap-1">
                         @for ($i = 1; $i <= 5; $i++)
                             <label class="cursor-pointer">
                                 <input type="radio" name="restaurant_rating" value="{{ $i }}" class="peer sr-only" required>
-                                <span class="block w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-sm peer-checked:bg-orange-600 peer-checked:text-white peer-checked:border-orange-600 hover:border-gray-300">
-                                    {{ $i }}
-                                </span>
+                                <span class="block text-3xl text-gray-300 peer-checked:text-orange-500 hover:text-orange-400 transition">★</span>
                             </label>
                         @endfor
                     </div>
@@ -103,13 +109,11 @@
 
                 <div>
                     <label class="block text-sm text-gray-700 mb-2">Rider</label>
-                    <div class="flex gap-2">
+                    <div class="flex gap-1">
                         @for ($i = 1; $i <= 5; $i++)
                             <label class="cursor-pointer">
                                 <input type="radio" name="rider_rating" value="{{ $i }}" class="peer sr-only" required>
-                                <span class="block w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-sm peer-checked:bg-orange-600 peer-checked:text-white peer-checked:border-orange-600 hover:border-gray-300">
-                                    {{ $i }}
-                                </span>
+                                <span class="block text-3xl text-gray-300 peer-checked:text-orange-500 hover:text-orange-400 transition">★</span>
                             </label>
                         @endfor
                     </div>
@@ -119,6 +123,32 @@
                     Submit
                 </button>
             </form>
+        </div>
+    @endif
+
+    {{-- SHOW RATINGS (kung may rating na) --}}
+    @if ($order->status === 'delivered' && $order->restaurant_rating)
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-4">Your ratings</p>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-700">Restaurant</span>
+                    <div class="flex gap-0.5">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <span class="text-xl {{ $i <= $order->restaurant_rating ? 'text-orange-500' : 'text-gray-300' }}">★</span>
+                        @endfor
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-700">Rider</span>
+                    <div class="flex gap-0.5">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <span class="text-xl {{ $i <= $order->rider_rating ? 'text-orange-500' : 'text-gray-300' }}">★</span>
+                        @endfor
+                    </div>
+                </div>
+            </div>
         </div>
     @endif
 </div>

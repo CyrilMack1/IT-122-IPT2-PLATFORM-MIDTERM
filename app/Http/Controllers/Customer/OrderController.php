@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\SystemConfig;
+use App\Notifications\NewOrderForRestaurantNotification;
+use App\Notifications\OrderPlacedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -81,6 +83,13 @@ class OrderController extends Controller
             return $order;
         });
 
+        // Send notifications
+        $order->customer->notify(new OrderPlacedNotification($order));
+
+        if ($order->restaurant && $order->restaurant->user) {
+            $order->restaurant->user->notify(new NewOrderForRestaurantNotification($order));
+        }
+
         return redirect()->route('customer.orders.show', $order)
             ->with('success', 'Order placed successfully!');
     }
@@ -98,5 +107,19 @@ class OrderController extends Controller
         $order->update($data);
 
         return back()->with('success', 'Ratings submitted. Thank you!');
+    }
+
+    public function reorder(Order $order)
+    {
+        abort_unless($order->customer_id === auth()->id(), 403);
+
+        $items = $order->items->map(fn($item) => [
+            'menu_item_id' => $item->menu_item_id,
+            'quantity' => $item->quantity,
+        ])->toArray();
+
+        session()->flash('reorder_items', $items);
+
+        return redirect()->route('customer.restaurants.show', $order->restaurant);
     }
 }

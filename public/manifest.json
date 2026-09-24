@@ -1,12 +1,14 @@
 {
-    "name": "FoodDash",
+    "name": "FoodDash — Food Delivery",
     "short_name": "FoodDash",
-    "description": "Local food delivery system",
+    "description": "Local food delivery system for restaurants, riders, and customers",
     "start_url": "/",
+    "scope": "/",
     "display": "standalone",
+    "orientation": "portrait",
     "background_color": "#ffffff",
     "theme_color": "#ff6b35",
-    "orientation": "portrait",
+    "lang": "en",
     "icons": [
         {
             "src": "/icon-192.png",
@@ -19,6 +21,20 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "My Orders",
+            "short_name": "Orders",
+            "url": "/orders",
+            "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Browse Restaurants",
+            "short_name": "Restaurants",
+            "url": "/restaurants",
+            "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
         }
     ]
 }

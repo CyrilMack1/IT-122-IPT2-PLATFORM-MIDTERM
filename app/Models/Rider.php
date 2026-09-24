@@ -13,6 +13,8 @@ class Rider extends Model
         'user_id',
         'is_online',
         'is_available',
+        'vehicle_type',
+        'vehicle_plate',
         'latitude',
         'longitude',
         'last_location_at',

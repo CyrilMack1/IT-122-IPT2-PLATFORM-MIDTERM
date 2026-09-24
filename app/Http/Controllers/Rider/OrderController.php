@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DeliveryOffer;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Notifications\OrderStatusNotification;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -28,7 +29,6 @@ class OrderController extends Controller
                 ->with('error', 'Offer expired or not found.');
         }
 
-        // ATOMIC: kunin ang order kung wala pang rider
         $updated = Order::where('id', $order->id)
             ->whereNull('rider_id')
             ->whereIn('status', ['finding_rider', 'confirmed'])
@@ -42,13 +42,15 @@ class OrderController extends Controller
                 ->with('error', 'Another rider accepted first.');
         }
 
-        // Signal sa naghihintay na job
         cache()->put("order:{$order->id}:accepted_rider", $rider->id, 60);
-
-        // I-set rider na busy
         $rider->update(['is_available' => false]);
 
-        broadcast(new RiderAssigned($order->fresh()));
+        $order->refresh();
+
+        broadcast(new RiderAssigned($order));
+
+        // Notify customer
+        $order->customer->notify(new OrderStatusNotification($order->fresh()));
 
         return redirect()->route('rider.dashboard')
             ->with('success', 'Order accepted! Proceed to the restaurant.');
@@ -64,6 +66,9 @@ class OrderController extends Controller
         abort_unless($order->rider_id === $rider->id, 403);
 
         $order->update(['status' => $data['status']]);
+
+        // Notify customer
+        $order->customer->notify(new OrderStatusNotification($order->fresh()));
 
         if ($data['status'] === 'delivered') {
             $rider->update(['is_available' => true]);

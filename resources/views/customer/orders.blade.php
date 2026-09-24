@@ -23,6 +23,31 @@
 @else
     <div class="space-y-2">
         @foreach ($orders as $order)
+            @php
+                $statusLabels = [
+                    'received' => 'Pending',
+                    'confirmed' => 'Confirmed',
+                    'preparing' => 'Preparing',
+                    'finding_rider' => 'Finding rider',
+                    'rider_assigned' => 'Rider assigned',
+                    'picked_up' => 'Picked up',
+                    'out_for_delivery' => 'On the way',
+                    'delivered' => 'Delivered',
+                    'no_rider' => 'No rider',
+                    'cancelled' => 'Cancelled',
+                    'rejected' => 'Rejected',
+                ];
+                $statusColors = [
+                    'delivered' => 'bg-green-50 text-green-700',
+                    'cancelled' => 'bg-red-50 text-red-700',
+                    'rejected' => 'bg-red-50 text-red-700',
+                    'no_rider' => 'bg-red-50 text-red-700',
+                    'received' => 'bg-gray-100 text-gray-600',
+                ];
+                $label = $statusLabels[$order->status] ?? ucfirst(str_replace('_', ' ', $order->status));
+                $color = $statusColors[$order->status] ?? 'bg-amber-50 text-amber-700';
+            @endphp
+
             <a href="{{ route('customer.orders.show', $order) }}"
                class="block bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition p-5">
                 <div class="flex justify-between items-start">
@@ -37,25 +62,8 @@
                         </p>
                         <p class="text-xs text-gray-400 mt-1">{{ $order->created_at->diffForHumans() }}</p>
                     </div>
-                    <span class="text-xs px-2.5 py-1 rounded-full font-medium whitespace-nowrap ml-4
-                        @if($order->status === 'delivered') bg-green-50 text-green-700
-                        @elseif(in_array($order->status, ['cancelled','rejected','no_rider'])) bg-red-50 text-red-700
-                        @elseif($order->status === 'received') bg-gray-100 text-gray-600
-                        @else bg-amber-50 text-amber-700 @endif">
-                        @switch($order->status)
-                            @case('received') Pending
-                            @case('confirmed') Confirmed
-                            @case('preparing') Preparing
-                            @case('finding_rider') Finding rider
-                            @case('rider_assigned') Rider assigned
-                            @case('picked_up') Picked up
-                            @case('out_for_delivery') On the way
-                            @case('delivered') Delivered
-                            @case('no_rider') No rider
-                            @case('cancelled') Cancelled
-                            @case('rejected') Rejected
-                            @default {{ ucfirst(str_replace('_', ' ', $order->status)) }}
-                        @endswitch
+                    <span class="text-xs px-2.5 py-1 rounded-full font-medium whitespace-nowrap ml-4 {{ $color }}">
+                        {{ $label }}
                     </span>
                 </div>
             </a>

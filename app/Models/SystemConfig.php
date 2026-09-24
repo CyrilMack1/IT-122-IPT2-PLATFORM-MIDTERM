@@ -10,6 +10,7 @@ class SystemConfig extends Model
     use HasFactory;
 
     protected $fillable = [
+        'town_address',
         'town_center_lat',
         'town_center_lng',
         'service_radius_km',
@@ -24,12 +25,13 @@ class SystemConfig extends Model
     ];
 
     public static function current(): self
-{
-    return static::first() ?? static::create([
-        'town_center_lat' => 8.4822,
-        'town_center_lng' => 124.6472,
-        'service_radius_km' => 10,
-        'default_delivery_fee' => 60,
-    ]);
-}
+    {
+        return static::first() ?? static::create([
+            'town_address' => 'Cagayan de Oro City',
+            'town_center_lat' => 8.4822,
+            'town_center_lng' => 124.6472,
+            'service_radius_km' => 10,
+            'default_delivery_fee' => 60,
+        ]);
+    }
 }

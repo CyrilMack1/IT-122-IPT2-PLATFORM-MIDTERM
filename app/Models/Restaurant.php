@@ -13,15 +13,18 @@ class Restaurant extends Model
         'user_id',
         'name',
         'address',
+ 	'cuisine',
         'latitude',
         'longitude',
         'is_open',
+        'prep_time_minutes',
     ];
 
     protected $casts = [
         'is_open' => 'boolean',
         'latitude' => 'float',
         'longitude' => 'float',
+        'prep_time_minutes' => 'integer',
     ];
 
     public function user()

@@ -14,6 +14,7 @@ class Order extends Model
         'restaurant_id',
         'rider_id',
         'status',
+   	'rejection_reason',
         'food_cost',
         'delivery_fee',
         'total_amount',

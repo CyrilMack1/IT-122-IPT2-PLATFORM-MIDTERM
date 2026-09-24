@@ -84,28 +84,22 @@
                 </div>
 
                 <div class="px-5 pb-5 space-y-4">
+                    {{-- ADDRESS --}}
                     <div>
                         <label class="block text-sm text-gray-700 mb-1.5">Delivery address</label>
-                        <textarea name="delivery_address" id="delivery_address" required rows="2"
+                        <textarea x-model="address" 
+                                  @input.debounce.800ms="geocodeAddress()"
+                                  required rows="2"
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                                   placeholder="Street, barangay, city"></textarea>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs text-gray-500 mb-1">Latitude</label>
-                            <input type="text" id="delivery_lat" name="delivery_lat"
-                                   value="8.4822" required
-                                   class="w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-500 mb-1">Longitude</label>
-                            <input type="text" id="delivery_lng" name="delivery_lng"
-                                   value="124.6472" required
-                                   class="w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-sm">
-                        </div>
-                    </div>
+                    {{-- HIDDEN LAT/LNG --}}
+                    <input type="hidden" name="delivery_address" :value="address">
+                    <input type="hidden" name="delivery_lat" :value="lat">
+                    <input type="hidden" name="delivery_lng" :value="lng">
 
+                    {{-- LOCATION BUTTON --}}
                     <button type="button" @click="useCurrentLocation()"
                             :disabled="locating"
                             class="w-full text-xs text-gray-600 hover:text-orange-600 border border-gray-300 rounded-lg py-2 disabled:opacity-50">
@@ -113,6 +107,18 @@
                         <span x-show="locating">Getting location...</span>
                     </button>
 
+                    {{-- STATUS MESSAGE --}}
+                    <p class="text-xs" x-show="geocoding">
+                        <span class="text-gray-500">Looking up address...</span>
+                    </p>
+                    <p class="text-xs" x-show="!geocoding && lat && lng && !locating" x-cloak>
+                        <span class="text-green-600">Location set</span>
+                    </p>
+                    <p class="text-xs" x-show="!geocoding && (!lat || !lng) && !locating" x-cloak>
+                        <span class="text-red-600">Please enter an address or use your location</span>
+                    </p>
+
+                    {{-- HIDDEN ITEMS --}}
                     <template x-for="line in cartLines" :key="'input-' + line.id">
                         <div>
                             <input type="hidden" :name="'items[' + line.index + '][menu_item_id]'" :value="line.id">
@@ -121,8 +127,8 @@
                     </template>
 
                     <button type="submit"
-                            :disabled="cartSize === 0"
-                            :class="cartSize === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-orange-700'"
+                            :disabled="cartSize === 0 || !lat || !lng"
+                            :class="(cartSize === 0 || !lat || !lng) ? 'opacity-40 cursor-not-allowed' : 'hover:bg-orange-700'"
                             class="w-full bg-orange-600 text-white py-2.5 rounded-lg text-sm font-medium">
                         Place order
                     </button>
@@ -142,6 +148,10 @@ function orderForm(restaurantId, menuItems) {
         cart: {},
         deliveryFee: {{ \App\Models\SystemConfig::current()->default_delivery_fee }},
         locating: false,
+        geocoding: false,
+        address: '',
+        lat: '',
+        lng: '',
 
         init() {
             this.menu.forEach(m => { this.cart[m.id] = 0; });
@@ -190,23 +200,20 @@ function orderForm(restaurantId, menuItems) {
             this.locating = true;
 
             navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
-
-                document.getElementById('delivery_lat').value = lat;
-                document.getElementById('delivery_lng').value = lng;
+                this.lat = pos.coords.latitude;
+                this.lng = pos.coords.longitude;
 
                 try {
                     const res = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${this.lat}&lon=${this.lng}&zoom=18&addressdetails=1`,
                         { headers: { 'Accept-Language': 'en' } }
                     );
                     const data = await res.json();
                     if (data && data.display_name) {
-                        document.getElementById('delivery_address').value = data.display_name;
+                        this.address = data.display_name;
                     }
                 } catch (err) {
-                    console.warn('Geocoding failed:', err);
+                    console.warn('Reverse geocoding failed:', err);
                 }
 
                 this.locating = false;
@@ -214,6 +221,39 @@ function orderForm(restaurantId, menuItems) {
                 alert('Could not get your location.');
                 this.locating = false;
             });
+        },
+
+        async geocodeAddress() {
+            if (!this.address || this.address.length < 5) {
+                this.lat = '';
+                this.lng = '';
+                return;
+            }
+            if (this.locating) return;
+
+            this.geocoding = true;
+
+            try {
+                const res = await fetch(
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.address)}&limit=1`,
+                    { headers: { 'Accept-Language': 'en' } }
+                );
+                const data = await res.json();
+
+                if (data && data.length > 0) {
+                    this.lat = data[0].lat;
+                    this.lng = data[0].lon;
+                } else {
+                    this.lat = '';
+                    this.lng = '';
+                }
+            } catch (err) {
+                console.warn('Geocoding failed:', err);
+                this.lat = '';
+                this.lng = '';
+            }
+
+            this.geocoding = false;
         }
     }
 }

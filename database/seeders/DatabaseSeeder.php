@@ -52,6 +52,7 @@ class DatabaseSeeder extends Seeder
         $restaurant = Restaurant::create([
     'user_id' => $restaurantUser->id,
     'name' => 'PizzaKid',
+'cuisine' => 'Pizza',
     'address' => 'Cagayan de Oro City',
     'latitude' => 8.4822,
     'longitude' => 124.6472,

@@ -42,6 +42,12 @@
                 Login
             </button>
 
+            <p class="text-center text-sm">
+                <a href="{{ route('password.request') }}" class="text-gray-500 hover:text-orange-600">
+                    Forgot password?
+                </a>
+            </p>
+
             <p class="text-center text-sm text-gray-600">
                 Don't have an account?
                 <a href="{{ route('register') }}" class="text-orange-600 hover:underline">Register</a>

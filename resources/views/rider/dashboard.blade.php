@@ -4,17 +4,24 @@
 <div x-data="riderDash({{ $rider->id }})" x-init="init()">
 
     {{-- HEADER --}}
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-bold">Rider Dashboard</h1>
-            <p class="text-sm text-gray-500">Welcome, {{ auth()->user()->name }}</p>
-        </div>
-        <button @click="toggleOnline()"
-                :class="online ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 hover:bg-gray-500'"
-                class="px-6 py-2 text-white rounded font-medium transition">
-            <span x-text="online ? '● Online' : '○ Offline'"></span>
-        </button>
+    <div class="flex justify-between items-center mb-4">
+    <div>
+        <h1 class="text-2xl font-bold">Rider Dashboard</h1>
+        <p class="text-sm text-gray-500">Welcome, {{ auth()->user()->name }}</p>
     </div>
+    <button @click="toggleOnline()"
+            :class="online ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 hover:bg-gray-500'"
+            class="px-6 py-2 text-white rounded font-medium transition">
+        <span x-text="online ? '● Online' : '○ Offline'"></span>
+    </button>
+</div>
+
+{{-- NAVIGATION --}}
+<div class="flex flex-wrap gap-2 mb-6">
+    <a href="{{ route('rider.dashboard') }}" class="bg-white border px-4 py-2 rounded text-sm hover:bg-gray-50">Dashboard</a>
+    <a href="{{ route('rider.history') }}" class="bg-white border px-4 py-2 rounded text-sm hover:bg-gray-50">Delivery History</a>
+    <a href="{{ route('rider.profile') }}" class="bg-white border px-4 py-2 rounded text-sm hover:bg-gray-50">Profile</a>
+</div>
 
     {{-- STATS --}}
     <div class="grid grid-cols-3 gap-3 mb-6">
