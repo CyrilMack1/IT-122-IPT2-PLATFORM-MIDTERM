@@ -3,3 +3,502 @@
 @tailwind utilities;
 
 [x-cloak] { display: none !important; }
+
+@layer components {
+    .fd-orange-select {
+        color-scheme: light;
+    }
+
+    .dark .fd-orange-select {
+        color-scheme: dark;
+    }
+
+    .fd-orange-select option:checked {
+        background: linear-gradient(0deg, #f97316, #f97316);
+        color: #ffffff;
+    }
+
+    .fd-orange-select option:hover,
+    .fd-orange-select option:focus {
+        background-color: #fb923c;
+        color: #ffffff;
+    }
+
+    .fd-message-stack {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 9990;
+        display: flex;
+        width: min(24rem, calc(100vw - 2rem));
+        flex-direction: column;
+        gap: 0.75rem;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+    }
+
+    .fd-message {
+        position: relative;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.75rem;
+        align-items: start;
+        overflow: hidden;
+        border: 1px solid rgba(229, 231, 235, 0.95);
+        border-radius: 0.75rem;
+        background: rgba(255, 255, 255, 0.96);
+        padding: 0.85rem 0.9rem;
+        color: #27272a;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+        backdrop-filter: blur(14px);
+        pointer-events: auto;
+        transform: translateY(-0.35rem);
+        opacity: 0;
+        animation: fd-message-in 180ms ease forwards;
+    }
+
+    .fd-message.is-leaving {
+        animation: fd-message-out 160ms ease forwards;
+    }
+
+    .fd-message-icon {
+        display: inline-flex;
+        width: 2rem;
+        height: 2rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .fd-message-icon svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .fd-message-title {
+        font-size: 0.78rem;
+        font-weight: 800;
+        line-height: 1.1;
+        text-transform: uppercase;
+        letter-spacing: 0;
+        color: #111827;
+    }
+
+    .fd-message-body {
+        margin-top: 0.2rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        color: #3f3f46;
+        overflow-wrap: anywhere;
+    }
+
+    .fd-message-close {
+        display: inline-flex;
+        width: 1.75rem;
+        height: 1.75rem;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: #71717a;
+        cursor: pointer;
+        transition: background 150ms ease, color 150ms ease;
+    }
+
+    .fd-message-close:hover {
+        background: #f4f4f5;
+        color: #18181b;
+    }
+
+    .fd-message-close svg {
+        width: 0.95rem;
+        height: 0.95rem;
+    }
+
+    .fd-message-progress {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 3px;
+        width: 100%;
+        transform-origin: left;
+        animation: fd-message-progress var(--fd-message-duration, 5000ms) linear forwards;
+    }
+
+    .fd-message-success .fd-message-icon,
+    .fd-message-success .fd-message-progress {
+        background: #16a34a;
+    }
+
+    .fd-message-error .fd-message-icon,
+    .fd-message-error .fd-message-progress {
+        background: #dc2626;
+    }
+
+    .fd-message-warning .fd-message-icon,
+    .fd-message-warning .fd-message-progress {
+        background: #f97316;
+    }
+
+    .fd-message-info .fd-message-icon,
+    .fd-message-info .fd-message-progress {
+        background: #2563eb;
+    }
+
+    .fd-confirm-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(15, 23, 42, 0.38);
+        backdrop-filter: blur(6px);
+    }
+
+    .fd-confirm-dialog {
+        width: min(26rem, 100%);
+        border: 1px solid rgba(229, 231, 235, 0.95);
+        border-radius: 0.9rem;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+        color: #18181b;
+        transform: translateY(-0.45rem) scale(0.98);
+        opacity: 0;
+        animation: fd-confirm-in 180ms ease forwards;
+    }
+
+    .fd-confirm-content {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.85rem;
+        padding: 1rem 1rem 0.85rem;
+    }
+
+    .fd-confirm-icon {
+        display: inline-flex;
+        width: 2.35rem;
+        height: 2.35rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: #fff7ed;
+        color: #f97316;
+    }
+
+    .fd-confirm-icon svg {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    .fd-confirm-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 800;
+        line-height: 1.25;
+        color: #111827;
+    }
+
+    .fd-confirm-message {
+        margin: 0.35rem 0 0;
+        font-size: 0.92rem;
+        line-height: 1.45;
+        color: #52525b;
+        overflow-wrap: anywhere;
+    }
+
+    .fd-confirm-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.65rem;
+        padding: 0 1rem 1rem;
+    }
+
+    .fd-confirm-button {
+        min-height: 2.35rem;
+        border-radius: 0.55rem;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.87rem;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+        transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
+    }
+
+    .fd-confirm-button:active {
+        transform: translateY(1px);
+    }
+
+    .fd-confirm-cancel {
+        border: 1px solid #d4d4d8;
+        background: white;
+        color: #3f3f46;
+    }
+
+    .fd-confirm-cancel:hover {
+        background: #f4f4f5;
+        border-color: #a1a1aa;
+    }
+
+    .fd-confirm-ok {
+        border: 1px solid #f97316;
+        background: #f97316;
+        color: white;
+    }
+
+    .fd-confirm-ok:hover {
+        background: #ea580c;
+        border-color: #ea580c;
+    }
+
+    .dark .fd-message,
+    .dark .fd-confirm-dialog {
+        border-color: rgba(63, 63, 70, 0.9);
+        background: rgba(24, 24, 27, 0.97);
+        color: #f4f4f5;
+    }
+
+    .dark .fd-message-title,
+    .dark .fd-confirm-title {
+        color: #fafafa;
+    }
+
+    .dark .fd-message-body,
+    .dark .fd-confirm-message {
+        color: #d4d4d8;
+    }
+
+    .dark .fd-message-close {
+        color: #a1a1aa;
+    }
+
+    .dark .fd-message-close:hover,
+    .dark .fd-confirm-cancel:hover {
+        background: #27272a;
+        color: #fafafa;
+    }
+
+    .dark .fd-confirm-icon {
+        background: rgba(249, 115, 22, 0.14);
+    }
+
+    .dark .fd-confirm-cancel {
+        border-color: #52525b;
+        background: #18181b;
+        color: #e4e4e7;
+    }
+}
+
+@keyframes fd-message-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fd-message-out {
+    to {
+        opacity: 0;
+        transform: translateY(-0.35rem);
+    }
+}
+
+@keyframes fd-message-progress {
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@keyframes fd-confirm-in {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 640px) {
+    .fd-message-stack {
+        top: 50%;
+        left: 50%;
+        right: auto;
+        width: min(24rem, calc(100vw - 1.5rem));
+        transform: translate(-50%, -50%);
+    }
+
+    .fd-confirm-layer {
+        align-items: center;
+        padding: 1rem;
+    }
+
+    .fd-confirm-actions {
+        flex-direction: column-reverse;
+    }
+
+    .fd-confirm-button {
+        width: 100%;
+    }
+}
+
+/* ======================================================== */
+/* FLATPICKR DATEPICKER (FOODDASH ORANGE & EXACT FIT)       */
+/* ======================================================== */
+.flatpickr-calendar.static {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: calc(100% + 4px) !important;
+    margin-top: 0 !important;
+    padding: 8px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 12px 28px -5px rgba(0, 0, 0, 0.12) !important;
+    font-family: inherit !important;
+}
+
+.dark .flatpickr-calendar.static {
+    background: #141414 !important;
+    border-color: #262626 !important;
+    color: #ffffff !important;
+    box-shadow: 0 12px 28px -5px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ========================================= */
+/* FIX MONTH & YEAR HEADER (NO OVERLAPPING)  */
+/* ========================================= */
+.flatpickr-months {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    height: 36px !important;
+    margin-bottom: 4px !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.flatpickr-current-month {
+    position: static !important; /* Stops the overlap */
+    width: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;         /* Puts clean space between October and 2026 */
+    padding: 0 !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    line-height: normal !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+}
+
+.flatpickr-current-month .numInputWrapper {
+    width: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.flatpickr-current-month input.cur-year {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.dark .flatpickr-current-month,
+.dark .flatpickr-current-month input.cur-year,
+.dark .flatpickr-current-month .flatpickr-monthDropdown-months {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+}
+
+.flatpickr-weekdays {
+    width: 100% !important;
+}
+.flatpickr-weekdaycontainer {
+    width: 100% !important;
+    display: flex !important;
+}
+span.flatpickr-weekday {
+    flex: 1 !important;
+    max-width: 14.28% !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: #737373 !important;
+}
+
+.flatpickr-days {
+    width: 100% !important;
+}
+.dayContainer {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+}
+.flatpickr-day {
+    flex: 0 0 14.28% !important;
+    max-width: 14.28% !important;
+    height: 28px !important;
+    line-height: 28px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 1px 0 !important;
+    border: 1px solid transparent !important;
+}
+
+.dark .flatpickr-day {
+    color: #e5e7eb !important;
+}
+.dark .flatpickr-day.prevMonthDay,
+.dark .flatpickr-day.nextMonthDay {
+    color: #52525b !important;
+}
+
+/* Orange Active & Hover */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected:hover,
+.flatpickr-day:hover {
+    background: #ea580c !important;
+    border-color: #ea580c !important;
+    color: #ffffff !important;
+}
+
+.flatpickr-day.today {
+    border-color: #ea580c !important;
+    color: #ea580c !important;
+}
+.dark .flatpickr-day.today {
+    color: #fb923c !important;
+}
+.flatpickr-day.today:hover {
+    background: #ea580c !important;
+    color: #ffffff !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: #ea580c !important;
+}
